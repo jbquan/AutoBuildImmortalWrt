@@ -6,7 +6,7 @@ source shell/custom-packages.sh
 # =========================================================
 echo "🛠️ 正在初始化編譯環境..."
 echo "option check_signature 0" >> /etc/opkg.conf
-date -s "2026-04-03 00:05:00"
+date -s "2026-04-03 00:30:00"
 
 # =========================================================
 # 2. 同步倉庫與配置
@@ -26,7 +26,7 @@ arch aarch64_generic 10\n\
 arch aarch64_cortex-a53 15' repositories.conf
 
 # =========================================================
-# 3. 內核優化植入 (PlayStation 必備)
+# 3. 內核優化植入
 # =========================================================
 echo "🚀 正在植入內核優化參數..."
 mkdir -p /home/build/immortalwrt/files/etc
@@ -52,7 +52,7 @@ pppoe_password=${PPPOE_PASSWORD}
 EOF
 
 # =========================================================
-# 5. 定義安裝包清單 (重點：剔除無效包)
+# 5. 定義安裝包清單
 # =========================================================
 PACKAGES=""
 
@@ -70,11 +70,11 @@ PACKAGES="$PACKAGES -dnsmasq dnsmasq-full"
 PACKAGES="$PACKAGES kmod-nft-socket kmod-nft-tproxy kmod-nft-nat kmod-tun"
 PACKAGES="$PACKAGES ip-full ipset iptables-nft kmod-tcp-bbr"
 
-# [🔥 PassWall 核心區]
-# 這裡不手動寫 SSR 核心名，避免包名不匹配報錯
-# PassWall 會自動拉取它需要的依賴
+# [🔥 PassWall 與 精準 SSR 核心]
 PACKAGES="$PACKAGES ca-bundle ca-certificates libustream-openssl coreutils-base64 unzip"
 PACKAGES="$PACKAGES chinadns-ng xray-core sing-box"
+# 強制編譯時寫入 SSR 核心，解決訂閱為 0 問題
+PACKAGES="$PACKAGES shadowsocksr-libev-ssr-local shadowsocksr-libev-ssr-redir shadowsocksr-libev-ssr-check"
 PACKAGES="$PACKAGES luci-app-passwall luci-i18n-passwall-zh-cn"
 
 # [網絡加速]
@@ -106,11 +106,10 @@ fi
 # 7. 開始構建
 # =========================================================
 echo "Building for profile: $PROFILE"
-# 加上 --force-depends 雖然唔建議，但係可以作為最後手段，不過我哋先試試正常編譯
 make image PROFILE=$PROFILE PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" V=s
 
 if [ $? -ne 0 ]; then
-    echo "❌ Error: Build failed! 今次應該唔會係 SSR 包名問題喇。"
+    echo "❌ Error: Build failed!"
     exit 1
 fi
 
