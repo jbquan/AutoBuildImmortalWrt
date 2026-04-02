@@ -82,7 +82,7 @@ PACKAGES="$PACKAGES chinadns-ng xray-core sing-box"
 PACKAGES="$PACKAGES luci-app-passwall luci-i18n-passwall-zh-cn"
 
 # [网络加速]
-PACKAGES="$PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
+PACKAGES="$PACKAGES luci-app-turboacc"
 PACKAGES="$PACKAGES luci-i18n-diskman-zh-cn"
 
 # =========================================================
