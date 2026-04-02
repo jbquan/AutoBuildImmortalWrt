@@ -1,13 +1,12 @@
 #!/bin/bash
 source shell/custom-packages.sh
-# 该文件实际为imagebuilder容器内的build.sh
 
 # =========================================================
 # 1. 環境初始化
 # =========================================================
 echo "🛠️ 正在初始化編譯環境..."
 echo "option check_signature 0" >> /etc/opkg.conf
-date -s "2026-04-02 23:58:00"
+date -s "2026-04-03 00:05:00"
 
 # =========================================================
 # 2. 同步倉庫與配置
@@ -27,7 +26,7 @@ arch aarch64_generic 10\n\
 arch aarch64_cortex-a53 15' repositories.conf
 
 # =========================================================
-# 3. 內核優化植入
+# 3. 內核優化植入 (PlayStation 必備)
 # =========================================================
 echo "🚀 正在植入內核優化參數..."
 mkdir -p /home/build/immortalwrt/files/etc
@@ -43,7 +42,7 @@ vm.vfs_cache_pressure=50
 EOF
 
 # =========================================================
-# 4. 生成配置文件
+# 4. 生成配置文件 (PPPoE)
 # =========================================================
 mkdir -p /home/build/immortalwrt/files/etc/config
 cat << EOF > /home/build/immortalwrt/files/etc/config/pppoe-settings
@@ -53,7 +52,7 @@ pppoe_password=${PPPOE_PASSWORD}
 EOF
 
 # =========================================================
-# 5. 定義安裝包清單
+# 5. 定義安裝包清單 (重點：剔除無效包)
 # =========================================================
 PACKAGES=""
 
@@ -63,26 +62,26 @@ PACKAGES="$PACKAGES luci-theme-argon luci-app-argon-config luci-i18n-argon-confi
 PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn luci-i18n-ttyd-zh-cn openssh-sftp-server"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn luci-i18n-dufs-zh-cn"
 
-# [🎮 UPnP 支持]
+# [🎮 UPnP 支持 - PlayStation 聯機關鍵]
 PACKAGES="$PACKAGES luci-app-upnp luci-i18n-upnp-zh-cn"
 
-# [核心依賴]
+# [核心網絡組件]
 PACKAGES="$PACKAGES -dnsmasq dnsmasq-full"
 PACKAGES="$PACKAGES kmod-nft-socket kmod-nft-tproxy kmod-nft-nat kmod-tun"
 PACKAGES="$PACKAGES ip-full ipset iptables-nft kmod-tcp-bbr"
 
-# [🔥 PassWall 與 SSR 核心修復]
+# [🔥 PassWall 核心區]
+# 這裡不手動寫 SSR 核心名，避免包名不匹配報錯
+# PassWall 會自動拉取它需要的依賴
 PACKAGES="$PACKAGES ca-bundle ca-certificates libustream-openssl coreutils-base64 unzip"
 PACKAGES="$PACKAGES chinadns-ng xray-core sing-box"
-# 針對 24.10 的 SSR 兼容包
-PACKAGES="$PACKAGES shadowsocksr-libev-alt shadowsocks-libev-ss-local shadowsocks-libev-ss-redir"
 PACKAGES="$PACKAGES luci-app-passwall luci-i18n-passwall-zh-cn"
 
 # [網絡加速]
 PACKAGES="$PACKAGES luci-app-turboacc luci-i18n-diskman-zh-cn"
 
 # =========================================================
-# 6. 動態邏輯處理 (確保 if/fi 完整)
+# 6. 動態邏輯處理
 # =========================================================
 if [ "$PROFILE" = "glinet_gl-axt1800" ] || [ "$PROFILE" = "glinet_gl-ax1800" ]; then
     PACKAGES="$PACKAGES -luci-i18n-diskman-zh-cn luci-i18n-homeproxy-zh-cn"
@@ -94,7 +93,7 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
 fi
 
-# OpenClash 處理
+# OpenClash 下載
 if echo "$PACKAGES" | grep -q "luci-app-openclash"; then
     echo "✅ 配置 OpenClash..."
     mkdir -p files/etc/openclash/core
@@ -107,10 +106,11 @@ fi
 # 7. 開始構建
 # =========================================================
 echo "Building for profile: $PROFILE"
+# 加上 --force-depends 雖然唔建議，但係可以作為最後手段，不過我哋先試試正常編譯
 make image PROFILE=$PROFILE PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" V=s
 
 if [ $? -ne 0 ]; then
-    echo "❌ Error: Build failed!"
+    echo "❌ Error: Build failed! 今次應該唔會係 SSR 包名問題喇。"
     exit 1
 fi
 
