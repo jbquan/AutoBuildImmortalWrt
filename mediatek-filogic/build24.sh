@@ -65,10 +65,22 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn luci-i18n-dufs-zh-cn"
 # [🎮 UPnP 支持 - PlayStation 聯機關鍵]
 PACKAGES="$PACKAGES luci-app-upnp luci-i18n-upnp-zh-cn"
 
-# [核心網絡組件]
+# [核心網絡與性能優化]
 PACKAGES="$PACKAGES -dnsmasq dnsmasq-full"
 PACKAGES="$PACKAGES kmod-nft-socket kmod-nft-tproxy kmod-nft-nat kmod-tun"
 PACKAGES="$PACKAGES ip-full ipset iptables-nft kmod-tcp-bbr"
+# CPU 多核負載均衡優化 (推薦 MT7981 使用)
+PACKAGES="$PACKAGES irqbalance"
+
+# [📱 USB 隨身 WiFi (F50) 與手機共享全家桶]
+# 基礎 USB 及模式切換 (防止 F50 變成隨身碟)
+PACKAGES="$PACKAGES kmod-usb-core kmod-usb2 kmod-usb3 usbutils usb-modeswitch"
+# F50 / Android RNDIS 驅動
+PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether"
+# iPhone 分享驅動
+PACKAGES="$PACKAGES kmod-usb-net-ipheth"
+# 基礎 USB 儲存掛載 (方便第時插 USB 手指)
+PACKAGES="$PACKAGES block-mount kmod-fs-ext4 kmod-fs-vfat"
 
 # [🔥 PassWall 與 精準 SSR 核心]
 PACKAGES="$PACKAGES ca-bundle ca-certificates libustream-openssl coreutils-base64 unzip"
