@@ -76,7 +76,7 @@ PACKAGES="$PACKAGES irqbalance"
 # 基础 USB 及模式切换 (防止 F50 变成随身碟)
 PACKAGES="$PACKAGES kmod-usb-core kmod-usb2 kmod-usb3 usbutils usb-modeswitch"
 # F50 高速 NCM/ECM 驱动与基础 RNDIS 驱动
-PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-ecm"
+PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm"
 # iPhone 分享驱动
 PACKAGES="$PACKAGES kmod-usb-net-ipheth"
 # 基础 USB 储存挂载
@@ -86,7 +86,7 @@ PACKAGES="$PACKAGES block-mount kmod-fs-ext4 kmod-fs-vfat"
 PACKAGES="$PACKAGES ca-bundle ca-certificates libustream-openssl coreutils-base64 unzip"
 PACKAGES="$PACKAGES chinadns-ng xray-core sing-box"
 # 强制编译时写入 SSR 核心，解决订阅为 0 问题
-PACKAGES="$PACKAGES shadowsocksr-libev-ssr-local shadowsocksr-libev-ssr-redir shadowsocksr-libev-ssr-check"
+PACKAGES="$PACKAGES shadowsocksr-libev-ssr-local shadowsocksr-libev-ssr-redir"
 PACKAGES="$PACKAGES luci-app-passwall luci-i18n-passwall-zh-cn"
 # 显式添加 OpenClash，确保下方下载内核的逻辑生效
 PACKAGES="$PACKAGES luci-app-openclash"
