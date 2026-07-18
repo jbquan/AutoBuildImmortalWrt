@@ -2,18 +2,18 @@
 source shell/custom-packages.sh
 
 # =========================================================
-# 1. 環境初始化
+# 1. 环境初始化
 # =========================================================
-echo "🛠️ 正在初始化編譯環境..."
+echo "🛠️ 正在初始化编译环境..."
 echo "option check_signature 0" >> /etc/opkg.conf
 date -s "2026-04-03 00:30:00"
 
 # =========================================================
-# 2. 同步倉庫與配置
+# 2. 同步仓库与配置
 # =========================================================
-echo "🔄 正在同步第三方倉庫..."
+echo "🔄 正在同步第三方仓库..."
 if [ ! -d "/tmp/store-run-repo" ]; then
-    git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo || { echo "❌ Git clone 失敗"; exit 1; }
+    git clone --depth=1 https://github.com/wukongdaily/store.git /tmp/store-run-repo || { echo "❌ Git clone 失败"; exit 1; }
 fi
 
 mkdir -p /home/build/immortalwrt/extra-packages
@@ -26,9 +26,9 @@ arch aarch64_generic 10\n\
 arch aarch64_cortex-a53 15' repositories.conf
 
 # =========================================================
-# 3. 內核優化植入
+# 3. 内核优化植入
 # =========================================================
-echo "🚀 正在植入內核優化參數..."
+echo "🚀 正在植入内核优化参数..."
 mkdir -p /home/build/immortalwrt/files/etc
 cat << EOF > /home/build/immortalwrt/files/etc/sysctl.conf
 net.core.netdev_max_backlog=16384
@@ -52,48 +52,50 @@ pppoe_password=${PPPOE_PASSWORD}
 EOF
 
 # =========================================================
-# 5. 定義安裝包清單
+# 5. 定义安装包清单
 # =========================================================
 PACKAGES=""
 
-# [基礎與 UI]
+# [基础与 UI]
 PACKAGES="$PACKAGES curl luci luci-i18n-base-zh-cn luci-i18n-firewall-zh-cn"
 PACKAGES="$PACKAGES luci-theme-argon luci-app-argon-config luci-i18n-argon-config-zh-cn"
 PACKAGES="$PACKAGES luci-i18n-package-manager-zh-cn luci-i18n-ttyd-zh-cn openssh-sftp-server"
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn luci-i18n-dufs-zh-cn"
 
-# [🎮 UPnP 支持 - PlayStation 聯機關鍵]
+# [🎮 UPnP 支持 - PlayStation 联机关键]
 PACKAGES="$PACKAGES luci-app-upnp luci-i18n-upnp-zh-cn"
 
-# [核心網絡與性能優化]
+# [核心网络与性能优化]
 PACKAGES="$PACKAGES -dnsmasq dnsmasq-full"
 PACKAGES="$PACKAGES kmod-nft-socket kmod-nft-tproxy kmod-nft-nat kmod-tun"
 PACKAGES="$PACKAGES ip-full ipset iptables-nft kmod-tcp-bbr"
-# CPU 多核負載均衡優化 (推薦 MT7981 使用)
+# CPU 多核负载均衡优化 (推荐 MT7981 使用)
 PACKAGES="$PACKAGES irqbalance"
 
-# [📱 USB 隨身 WiFi (F50) 與手機共享全家桶]
-# 基礎 USB 及模式切換 (防止 F50 變成隨身碟)
+# [📱 USB 随身 WiFi (F50) 与手机共享全家桶]
+# 基础 USB 及模式切换 (防止 F50 变成随身碟)
 PACKAGES="$PACKAGES kmod-usb-core kmod-usb2 kmod-usb3 usbutils usb-modeswitch"
-# F50 / Android RNDIS 驅動
-PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether"
-# iPhone 分享驅動
+# F50 高速 NCM/ECM 驱动与基础 RNDIS 驱动
+PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-ecm"
+# iPhone 分享驱动
 PACKAGES="$PACKAGES kmod-usb-net-ipheth"
-# 基礎 USB 儲存掛載 (方便第時插 USB 手指)
+# 基础 USB 储存挂载
 PACKAGES="$PACKAGES block-mount kmod-fs-ext4 kmod-fs-vfat"
 
-# [🔥 PassWall 與 精準 SSR 核心]
+# [🔥 PassWall、OpenClash 与 精准 SSR 核心]
 PACKAGES="$PACKAGES ca-bundle ca-certificates libustream-openssl coreutils-base64 unzip"
 PACKAGES="$PACKAGES chinadns-ng xray-core sing-box"
-# 強制編譯時寫入 SSR 核心，解決訂閱為 0 問題
+# 强制编译时写入 SSR 核心，解决订阅为 0 问题
 PACKAGES="$PACKAGES shadowsocksr-libev-ssr-local shadowsocksr-libev-ssr-redir shadowsocksr-libev-ssr-check"
 PACKAGES="$PACKAGES luci-app-passwall luci-i18n-passwall-zh-cn"
+# 显式添加 OpenClash，确保下方下载内核的逻辑生效
+PACKAGES="$PACKAGES luci-app-openclash"
 
-# [網絡加速]
+# [网络加速]
 PACKAGES="$PACKAGES luci-app-turboacc luci-i18n-diskman-zh-cn"
 
 # =========================================================
-# 6. 動態邏輯處理
+# 6. 动态逻辑处理
 # =========================================================
 if [ "$PROFILE" = "glinet_gl-axt1800" ] || [ "$PROFILE" = "glinet_gl-ax1800" ]; then
     PACKAGES="$PACKAGES -luci-i18n-diskman-zh-cn luci-i18n-homeproxy-zh-cn"
@@ -105,17 +107,18 @@ if [ "$INCLUDE_DOCKER" = "yes" ]; then
     PACKAGES="$PACKAGES luci-i18n-dockerman-zh-cn"
 fi
 
-# OpenClash 下載
+# OpenClash 下载 (包含镜像加速，防止 Error 255 或连接超时)
 if echo "$PACKAGES" | grep -q "luci-app-openclash"; then
     echo "✅ 配置 OpenClash..."
     mkdir -p files/etc/openclash/core
-    META_URL="https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz"
-    wget --no-check-certificate -qO- $META_URL | tar xOvz > files/etc/openclash/core/clash_meta || echo "⚠️ Clash Core 下載失敗"
+    # 加入国内镜像加速源，绕过直连 Github 的 SSL/Timeout 问题
+    META_URL="https://mirror.ghproxy.com/https://raw.githubusercontent.com/vernesong/OpenClash/core/master/meta/clash-linux-arm64.tar.gz"
+    wget --no-check-certificate -qO- $META_URL | tar xOvz > files/etc/openclash/core/clash_meta || echo "⚠️ Clash Core 下载失败"
     chmod +x files/etc/openclash/core/clash_meta
 fi
 
 # =========================================================
-# 7. 開始構建
+# 7. 开始构建
 # =========================================================
 echo "Building for profile: $PROFILE"
 make image PROFILE=$PROFILE PACKAGES="$PACKAGES" FILES="/home/build/immortalwrt/files" V=s
