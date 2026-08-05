@@ -56,18 +56,22 @@ PACKAGES="$PACKAGES openssh-sftp-server"
 # 文件管理器
 PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 
-# ================= 新增配置区 =================
 
-# 1. USB 随身 WiFi (如中兴 F50) 驱动及 USB 共享网络支持
-PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-mbim usbutils usb-modeswitch"
+# ================= TR3000 / MT7981 专项优化配置 =================
 
-# 2. UPnP (通用即插即用) 支持
-PACKAGES="$PACKAGES luci-app-upnp luci-i18n-upnp-zh-cn"
+# 1. 硬件加速与 CPU 调频 (充分释放 MT7981 PPE/WED 硬件转发性能)
+PACKAGES="$PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
+PACKAGES="$PACKAGES luci-app-cpufreq luci-i18n-cpufreq-zh-cn autocore"
 
-# 3. 核心网络与性能优化驱动
-# kmod-tcp-bbr: 引入 BBR TCP 拥塞控制算法，显著降低延迟并提升吞吐量
-# irqbalance: 多核 CPU 中断均衡优化 (对 ARMv8 多核架构尤为重要)，防止单核满载、多核围观
-PACKAGES="$PACKAGES kmod-tcp-bbr irqbalance"
+
+
+# 3. 便携/移动中继与更完善的 USB 网卡驱动
+PACKAGES="$PACKAGES luci-app-travelmate luci-i18n-travelmate-zh-cn"
+PACKAGES="$PACKAGES kmod-usb-net-qmi-wwan kmod-usb-serial-option"
+
+
+
+# ================================================================
 
 # ==============================================
 
