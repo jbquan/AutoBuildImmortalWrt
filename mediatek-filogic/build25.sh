@@ -60,7 +60,6 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 # ================= TR3000 / MT7981 专项优化配置 =================
 
 # 1. 硬件加速与 CPU 调频 (充分释放 MT7981 PPE/WED 硬件转发性能)
-PACKAGES="$PACKAGES luci-app-turboacc luci-i18n-turboacc-zh-cn"
 PACKAGES="$PACKAGES luci-app-cpufreq luci-i18n-cpufreq-zh-cn autocore"
 
 
