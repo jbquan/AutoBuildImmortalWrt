@@ -59,17 +59,21 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 
 # ================= TR3000 / MT7981 专项优化配置 =================
 
-# 1. 硬件加速与 CPU 调频 (充分释放 MT7981 PPE/WED 硬件转发性能)
+
+# 1. 硬件 CPU 调频
 PACKAGES="$PACKAGES luci-app-cpufreq luci-i18n-cpufreq-zh-cn autocore"
 
+# 2. USB 基础硬件控制器驱动 (解决插上 USB 无反应的核心驱动)
+PACKAGES="$PACKAGES kmod-usb-core kmod-usb2 kmod-usb3 usbutils"
+
+# 3. USB 随身 WiFi / 手机热点共享网络驱动
+PACKAGES="$PACKAGES kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-serial-option usb-modeswitch"
+
+# 4. USB 移动硬盘 / U盘 存储与挂载驱动 (支持 NTFS/FAT32/exFAT/EXT4)
+PACKAGES="$PACKAGES kmod-usb-storage kmod-usb-storage-uas block-mount kmod-fs-ext4 kmod-fs-ntfs3 kmod-fs-vfat kmod-fs-exfat"
 
 
-# 3. 便携/移动中继与更完善的 USB 网卡驱动
-PACKAGES="$PACKAGES luci-app-travelmate luci-i18n-travelmate-zh-cn"
-PACKAGES="$PACKAGES kmod-usb-net-qmi-wwan kmod-usb-serial-option"
-
-
-
+# ================================================================
 # ================================================================
 
 # ==============================================
