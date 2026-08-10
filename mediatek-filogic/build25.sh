@@ -61,7 +61,7 @@ PACKAGES="$PACKAGES luci-i18n-filemanager-zh-cn"
 
 
 # 1. 硬件 CPU 调频
-PACKAGES="$PACKAGES luci-app-cpufreq luci-i18n-cpufreq-zh-cn autocore"
+
 
 # 2. USB 基础硬件控制器驱动 (解决插上 USB 无反应的核心驱动)
 PACKAGES="$PACKAGES kmod-usb-core kmod-usb2 kmod-usb3 usbutils"
